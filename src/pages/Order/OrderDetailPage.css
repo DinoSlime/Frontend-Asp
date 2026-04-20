@@ -1,0 +1,103 @@
+/* Container */
+.order-detail-container {
+    background-color: #f5f5f5; /* Nền xám nhẹ cho toàn trang */
+    min-height: 100vh;
+}
+
+.detail-content-wrapper {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Phần Header (Nút back + Tiêu đề) */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Card thông tin (Người nhận, Thanh toán) */
+.info-card {
+    height: 100%;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.info-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-color: var(--primary-color, #1890ff);
+}
+
+.info-row {
+    margin-bottom: 12px;
+    font-size: 15px;
+    display: flex;
+}
+
+.info-label {
+    color: #888;
+    width: 130px; /* Độ rộng cố định cho nhãn */
+    flex-shrink: 0;
+}
+
+.info-value {
+    color: #333;
+    font-weight: 500;
+}
+
+/* Phần bảng sản phẩm */
+.product-item-info {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.product-thumb {
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.product-name-link {
+    color: #333;
+    font-weight: 600;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+.product-name-link:hover {
+    color: var(--primary-color, #1890ff);
+}
+
+/* Tổng tiền cuối trang */
+.total-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed #ddd;
+}
+
+.total-wrapper {
+    text-align: right;
+    min-width: 300px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.final-price {
+    font-size: 24px;
+    color: #ff4d4f;
+    font-weight: 700;
+}

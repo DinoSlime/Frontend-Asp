@@ -1,0 +1,173 @@
+
+
+.app-header {
+  height: 72px;
+  background-color: #0f0f0f;
+  border-bottom: 2px solid #e10600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-header .logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.app-header .logo:hover {
+  color: #e10600;
+}
+
+
+.menu-custom {
+  background: transparent;
+  border-bottom: none;
+  height: 100%;
+}
+
+
+.menu-custom .ant-menu-item {
+  color: #d9d9d9;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 0 18px;
+  transition: all 0.3s ease;
+}
+
+
+.menu-custom .ant-menu-item:hover {
+  color: #ffffff;
+}
+
+
+.menu-custom .ant-menu-item::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 14px;
+  height: 3px;
+  background-color: #e10600;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.menu-custom .ant-menu-item:hover::after {
+  opacity: 1;
+}
+
+
+.menu-custom .ant-menu-item-selected {
+  color: #ffffff !important;
+}
+
+.menu-custom .ant-menu-item-selected::after {
+  opacity: 1;
+}
+
+
+.ant-menu-horizontal > .ant-menu-item::after {
+  border-bottom: none !important;
+}
+
+
+.app-header .ant-btn-circle {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.app-header .ant-btn-circle:hover {
+  border-color: #e10600;
+  color: #e10600;
+  background-color: #111;
+}
+
+/* Badge */
+.ant-badge-count {
+  background-color: #e10600;
+  font-weight: 700;
+}
+
+.header-user-info {
+  padding: 6px 10px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.header-user-info:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+
+.header-user-info .ant-typography {
+  color: #ffffff;
+}
+
+
+.ant-avatar {
+  border: 2px solid #e10600;
+}
+
+
+.user-app-scope .ant-dropdown-menu {
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.user-app-scope .ant-dropdown-menu-item {
+  font-weight: 500;
+}
+
+.user-app-scope .ant-dropdown-menu-item-danger {
+  color: #e10600;
+}
+
+.app-header .ant-btn {
+  font-weight: 600;
+}
+
+.app-header .ant-btn-default {
+  background-color: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.app-header .ant-btn-default:hover {
+  border-color: #e10600;
+  color: #e10600;
+}
+
+.app-header .ant-btn-primary {
+  background-color: #e10600;
+  border-color: #e10600;
+}
+
+.app-header .ant-btn-primary:hover {
+  background-color: #ff1a1a;
+  border-color: #ff1a1a;
+}
+
+.menu-custom.ant-menu-horizontal > .ant-menu-item:hover {
+  background-color: transparent !important; 
+  color: #e10600 !important;               
+}
+
+
+.menu-custom.ant-menu-horizontal > .ant-menu-item-active {
+  background-color: transparent !important;
+  color: #e10600 !important;
+}
+
+
+.menu-custom.ant-menu-horizontal > .ant-menu-item-selected {
+  background-color: transparent !important;
+  color: #e10600 !important;
+}

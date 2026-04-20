@@ -1,0 +1,101 @@
+/* Đảm bảo chỉ áp dụng cho trang User */
+.user-app-scope {
+
+    /* ================= BANNERS ================= */
+    .banner-wrapper {
+        height: 600px; /* Tăng chiều cao để banner trông thoáng hơn */
+        background-size: cover !important;
+        background-position: center center !important;
+        position: relative;
+    }
+
+    .banner-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        /* Sử dụng gradient tối dần xuống dưới để làm nổi bật nút bấm */
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+    }
+    
+    /* Tạo bóng nhẹ cho chữ trên banner dễ đọc hơn */
+    .banner-overlay h1, 
+    .banner-overlay span {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+
+    /* ================= SERVICES SECTION ================= */
+    .service-icon {
+        font-size: 48px;
+        color: var(--primary-color, #1890ff);
+        margin-bottom: 20px;
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+
+    /* Hiệu ứng nhảy nhẹ khi di chuột vào cột dịch vụ */
+    .ant-col:hover .service-icon {
+        transform: translateY(-10px);
+    }
+
+
+    /* ================= PRODUCT CARDS (QUAN TRỌNG) ================= */
+    .product-card-hover {
+        border-radius: 12px; /* Bo tròn góc card */
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    /* Hiệu ứng nổi lên khi hover vào card */
+    .product-card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    /* --- XỬ LÝ ẢNH SẢN PHẨM --- */
+    .ant-card-cover {
+        overflow: hidden; /* Để ảnh không tràn ra ngoài khi zoom */
+        height: 280px; /* Chiều cao cố định cho khung ảnh */
+    }
+
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* QUAN TRỌNG: Giúp ảnh không bị méo */
+        object-position: center;
+        transition: transform 0.5s ease;
+    }
+
+    /* Hiệu ứng zoom ảnh nhẹ khi hover */
+    .product-card-hover:hover .product-img {
+        transform: scale(1.1);
+    }
+
+    /* --- Tinh chỉnh nội dung Card --- */
+    .ant-card-body {
+        padding: 16px !important;
+    }
+
+    .ant-card-meta-title {
+        font-size: 16px;
+        margin-bottom: 8px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Làm đẹp phần nút bấm bên dưới Card */
+    .ant-card-actions {
+        border-top: 1px solid #f0f0f0;
+        background: #fafafa;
+    }
+    
+    .ant-card-actions > li {
+        margin: 8px 0;
+    }
+    
+    .ant-card-actions .anticon:hover {
+        color: var(--primary-color, #1890ff);
+    }
+}

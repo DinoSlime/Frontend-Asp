@@ -1,0 +1,57 @@
+/* Container chính */
+.order-history-container {
+    background-color: #fff;
+    min-height: 80vh;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Tiêu đề trang */
+.page-title {
+    margin-bottom: 25px;
+    color: #333;
+    font-weight: 700 !important;
+    border-left: 5px solid var(--primary-color, #1890ff);
+    padding-left: 15px;
+}
+
+/* Tùy chỉnh bảng Ant Design */
+.custom-table .ant-table-thead > tr > th {
+    background-color: #f0f5ff; /* Màu nền header xanh nhạt */
+    color: #333;
+    font-weight: 600;
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+    background-color: #f9f9f9 !important; /* Màu hover hàng */
+}
+
+/* Cột Mã đơn hàng */
+.order-id-text {
+    color: #555;
+    font-family: monospace;
+    font-size: 15px;
+    background: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* --- SỬA LẠI PHẦN NÀY --- */
+/* Nút hành động (Xem chi tiết) */
+.btn-view-detail {
+    border-radius: 4px;
+    font-size: 13px;
+    
+    /* Mặc định: Chữ xanh, Viền xanh, Nền trong suốt */
+    color: #1890ff !important; 
+    border-color: #1890ff !important;
+    background-color: transparent !important;
+}
+
+/* Khi di chuột vào: Nền xanh, Chữ trắng */
+.btn-view-detail:hover {
+    background-color: #1890ff !important;
+    color: #fff !important;
+    border-color: #1890ff !important;
+}
