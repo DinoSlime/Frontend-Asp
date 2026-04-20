@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Typography, Carousel, Row, Col, Spin, message } from 'antd';
 import { RocketOutlined, SafetyCertificateOutlined, CustomerServiceOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import productService from '../../services/productService';
 import ProductCard from '../../components/ProductCard/index';
 import './HomePage.css';
 
 const { Title, Text } = Typography;
 
-// --- CONSTANTS ---
 const BANNER_IMAGE = "https://images.unsplash.com/photo-1556906781-9a412961d289?auto=format&fit=crop&w=1600&q=80";
 
 const SERVICE_ITEMS = [
@@ -20,9 +19,7 @@ const SERVICE_ITEMS = [
 const HomePage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate(); // 2. Khởi tạo navigate
-
-    // 3. Tạo Ref để làm "mỏ neo" cho phần Sản phẩm mới
+    const navigate = useNavigate(); 
     const newProductsRef = useRef(null);
 
     useEffect(() => {
@@ -33,11 +30,24 @@ const HomePage = () => {
         try {
             setLoading(true);
             const res = await productService.getAll();
-            const data = res.data?.content || res.data || [];
             
-            if (Array.isArray(data)) {
-                // Lấy 8 sản phẩm đầu tiên để hiển thị ở trang chủ
-                setProducts(data.slice(0, 8));
+            // ✅ ĐÃ SỬA: Logic bóc tách mảng dữ liệu linh hoạt cho Backend C#
+            let rawData = [];
+            
+            if (res?.data?.data && Array.isArray(res.data.data)) {
+                // Trường hợp API trả về { data: { data: [...] } }
+                rawData = res.data.data;
+            } else if (res?.data && Array.isArray(res.data)) {
+                // Trường hợp API trả về { data: [...] } (Cấu trúc C# của bạn hiện tại)
+                rawData = res.data;
+            } else if (Array.isArray(res)) {
+                // Trường hợp trả về thẳng mảng
+                rawData = res;
+            }
+            
+            if (rawData.length > 0) {
+                // Lấy tối đa 8 sản phẩm mới nhất hiện trang chủ
+                setProducts(rawData.slice(0, 8));
             } else {
                 setProducts([]);
             }
@@ -49,7 +59,6 @@ const HomePage = () => {
         }
     };
 
-    // 4. Hàm xử lý cuộn trang mượt mà
     const scrollToNewProducts = () => {
         if (newProductsRef.current) {
             newProductsRef.current.scrollIntoView({ 
@@ -76,7 +85,7 @@ const HomePage = () => {
                                     size="large" 
                                     shape="round" 
                                     className="font-bold px-20"
-                                    onClick={scrollToNewProducts} // Cuộn xuống khi click
+                                    onClick={scrollToNewProducts}
                                 >
                                     SẢN PHẨM MỚI
                                 </Button>
@@ -110,10 +119,8 @@ const HomePage = () => {
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-20">
-                        <Spin tip="Đang tải...">
-                            <div className="content-to-load" />
-                        </Spin>
+                    <div className="text-center py-40">
+                        <Spin tip="Đang tải sản phẩm..." size="large" />
                     </div>
                 ) : (
                     <Row gutter={[24, 24]}>
@@ -124,19 +131,19 @@ const HomePage = () => {
                                 </Col>
                             ))
                         ) : (
-                            <div className="w-100 text-center">
-                                <Text type="secondary">Chưa có sản phẩm nào.</Text>
+                            <div className="w-100 text-center py-20">
+                                <Text type="secondary">Chưa có sản phẩm nào được hiển thị.</Text>
                             </div>
                         )}
                     </Row>
                 )}
 
-                {/* 5. Nút Xem tất cả sản phẩm điều hướng sang trang /products */}
+                {/* 5. Nút Xem tất cả sản phẩm */}
                 <div className="text-center mt-40 mb-20">
                      <Button 
                         size="large" 
                         type="default" 
-                        onClick={() => navigate('/products')} // Chuyển hướng trang
+                        onClick={() => navigate('/products')}
                         style={{ borderRadius: '8px', padding: '0 40px', fontWeight: 'bold' }}
                      >
                         Xem tất cả sản phẩm
