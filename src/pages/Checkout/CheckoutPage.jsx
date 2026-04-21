@@ -24,10 +24,7 @@ const CheckoutPage = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [qrData, setQrData] = useState(null);
     
-    // 👇 [MỚI] State lưu ID đơn hàng vừa tạo để cập nhật trạng thái nếu khách thanh toán luôn
     const [createdOrderId, setCreatedOrderId] = useState(null);
-
-    // 👇 [MỚI] State chặn redirect về giỏ hàng khi thanh toán thành công
     const [isSuccess, setIsSuccess] = useState(false);
 
     const { cartItems, clearCart } = useContext(CartContext);
@@ -48,23 +45,19 @@ const CheckoutPage = () => {
         }
     }, [user, form]);
 
-    // 👇 [QUAN TRỌNG] Logic chặn đá về trang cart
     useEffect(() => {
         if (cartItems.length === 0 && !isModalVisible && !isSuccess) {
             navigate('/cart');
         }
     }, [cartItems, navigate, isModalVisible, isSuccess]);
 
-    // --- LOGIC 1: Khách bấm "Tôi đã chuyển tiền" ---
     const handleConfirmPayment = async () => {
         try {
-            // 1. Cập nhật trạng thái đơn hàng sang WAITING_CONFIRM
             if (createdOrderId) {
                 await orderService.updateOrderStatus(createdOrderId, 'WAITING_CONFIRM');
             }
             
-            // 2. Xử lý giao diện
-            setIsSuccess(true); // Bật cờ thành công
+            setIsSuccess(true); 
             setIsModalVisible(false);
             clearCart(); 
             message.success('Đã ghi nhận! Vui lòng chờ Admin xác nhận.');
@@ -74,7 +67,6 @@ const CheckoutPage = () => {
             }, 100);
         } catch (error) {
             console.error(error);
-            // Dù lỗi API update thì vẫn cho khách về trang đích
             setIsSuccess(true);
             setIsModalVisible(false);
             clearCart();
@@ -82,9 +74,8 @@ const CheckoutPage = () => {
         }
     };
 
-    // --- LOGIC 2: Khách tắt Modal (Chưa thanh toán ngay) ---
     const handleCloseModal = () => {
-        setIsSuccess(true); // Vẫn bật cờ thành công vì đơn ĐÃ TẠO rồi
+        setIsSuccess(true); 
         setIsModalVisible(false);
         clearCart(); 
         message.info('Đơn hàng đã được tạo. Bạn có thể thanh toán lại trong mục Lịch sử đơn hàng.');
@@ -97,17 +88,18 @@ const CheckoutPage = () => {
     const handlePlaceOrder = async (values) => {
         setLoading(true);
         try {
+            // 👇 [ĐÃ SỬA]: Đổi toàn bộ key sang định dạng camelCase để C# hiểu được
             const orderData = {
-                customer_name: values.fullName,
-                phone_number: values.phone,
+                fullName: values.fullName,
+                phoneNumber: values.phone,
                 address: values.address,
                 note: values.note,
-                payment_method: values.paymentMethod,
-                total_money: finalTotal,
-                user_id: user ? user.id : null,
-                order_details: cartItems.map(item => ({
-                    product_id: item.id,
-                    variant_id: item.variantId,
+                paymentMethod: values.paymentMethod,
+                totalMoney: finalTotal,
+                userId: user ? user.id : 0, // Dùng 0 nếu không có user thay vì null để tránh lỗi kiểu long trong C#
+                orderDetails: cartItems.map(item => ({
+                    productId: item.id,
+                    variantId: item.variantId,
                     quantity: item.quantity,
                     price: item.price
                 }))
@@ -117,7 +109,6 @@ const CheckoutPage = () => {
             const res = await orderService.createOrder(orderData);
             const createdOrder = res.data; 
             
-            // 👇 Lưu ID đơn hàng lại để dùng cho bước xác nhận
             setCreatedOrderId(createdOrder.id);
 
             // 2. Kiểm tra phương thức thanh toán
@@ -144,7 +135,9 @@ const CheckoutPage = () => {
 
         } catch (error) {
             console.error("Lỗi đặt hàng:", error);
-            message.error('Đặt hàng thất bại, vui lòng thử lại!');
+            // Hiện rõ lỗi từ Backend trả về nếu có
+            const errorMessage = error.response?.data?.message || 'Đặt hàng thất bại, vui lòng thử lại!';
+            message.error(errorMessage);
         } finally {
             setLoading(false);
         }
