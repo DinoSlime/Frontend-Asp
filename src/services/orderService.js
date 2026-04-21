@@ -22,7 +22,12 @@ const orderService = {
         return axiosClient.put(`/Orders/admin/update-status/${orderId}`, null, {
             params: { status }
         });
-    }
+    },
+
+
+    confirmPayment: (id) => {
+        return axiosClient.put(`/Orders/confirm-payment/${id}`);
+    },
 };
 
 export default orderService;

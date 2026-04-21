@@ -46,15 +46,17 @@ const CategoryManager = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        try {
-            await categoryService.delete(id);
-            message.success('Đã xóa danh mục');
-            fetchCategories();
-        } catch (error) {
-            message.error('Xóa thất bại (Có thể danh mục đang chứa sản phẩm)');
-        }
-    };
+const handleDelete = async (id) => {
+    try {
+        await categoryService.delete(id);
+        message.success('Xóa thành công');
+        fetchData();
+    } catch (error) {
+        // 👇 Lấy message từ backend trả về để hiện lên thông báo
+        const errorMsg = error.response?.data?.message || 'Xóa thất bại';
+        message.error(errorMsg);
+    }
+};
 
     const openEditModal = (record) => {
         setEditingCategory(record);

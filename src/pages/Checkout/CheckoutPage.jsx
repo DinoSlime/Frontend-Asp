@@ -20,10 +20,8 @@ const CheckoutPage = () => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    // State Modal & QR
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [qrData, setQrData] = useState(null);
-    
     const [createdOrderId, setCreatedOrderId] = useState(null);
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -34,7 +32,6 @@ const CheckoutPage = () => {
     const shippingFee = 30000; 
     const finalTotal = subTotal + shippingFee;
 
-    // Tự động điền form
     useEffect(() => {
         if (user) {
             form.setFieldsValue({
@@ -51,26 +48,32 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate, isModalVisible, isSuccess]);
 
+    // 👇 SỬA TẠI ĐÂY: Hàm xác nhận ngay trên Checkout
     const handleConfirmPayment = async () => {
         try {
+            setLoading(true);
             if (createdOrderId) {
-                await orderService.updateOrderStatus(createdOrderId, 'WAITING_CONFIRM');
+                // Gọi hàm confirmPayment dành cho User thay vì hàm admin update status
+                await orderService.confirmPayment(createdOrderId);
             }
             
             setIsSuccess(true); 
             setIsModalVisible(false);
             clearCart(); 
-            message.success('Đã ghi nhận! Vui lòng chờ Admin xác nhận.');
+            message.success('Đã nhận yêu cầu thanh toán! Đang chuyển đến chi tiết đơn hàng.');
             
+            // Chuyển hướng thẳng vào trang chi tiết đơn hàng vừa tạo
             setTimeout(() => {
-                navigate('/orders');
-            }, 100);
+                navigate(`/order/${createdOrderId}`);
+            }, 300);
         } catch (error) {
             console.error(error);
             setIsSuccess(true);
             setIsModalVisible(false);
             clearCart();
             navigate('/orders');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -78,17 +81,13 @@ const CheckoutPage = () => {
         setIsSuccess(true); 
         setIsModalVisible(false);
         clearCart(); 
-        message.info('Đơn hàng đã được tạo. Bạn có thể thanh toán lại trong mục Lịch sử đơn hàng.');
-        
-        setTimeout(() => {
-            navigate('/orders');
-        }, 100);
+        message.info('Đơn hàng đã được tạo. Bạn có thể thanh toán sau trong Lịch sử đơn hàng.');
+        setTimeout(() => { navigate('/orders'); }, 100);
     };
 
     const handlePlaceOrder = async (values) => {
         setLoading(true);
         try {
-            // 👇 [ĐÃ SỬA]: Đổi toàn bộ key sang định dạng camelCase để C# hiểu được
             const orderData = {
                 fullName: values.fullName,
                 phoneNumber: values.phone,
@@ -96,7 +95,7 @@ const CheckoutPage = () => {
                 note: values.note,
                 paymentMethod: values.paymentMethod,
                 totalMoney: finalTotal,
-                userId: user ? user.id : 0, // Dùng 0 nếu không có user thay vì null để tránh lỗi kiểu long trong C#
+                userId: user ? user.id : 0,
                 orderDetails: cartItems.map(item => ({
                     productId: item.id,
                     variantId: item.variantId,
@@ -105,38 +104,29 @@ const CheckoutPage = () => {
                 }))
             };
 
-            // 1. Tạo đơn hàng
             const res = await orderService.createOrder(orderData);
             const createdOrder = res.data; 
-            
             setCreatedOrderId(createdOrder.id);
 
-            // 2. Kiểm tra phương thức thanh toán
             if (values.paymentMethod === 'BANK') {
                 try {
                     const qrRes = await paymentService.createVietQR(createdOrder);
                     setQrData(qrRes.data);
                     setIsModalVisible(true);
                 } catch (err) {
-                    message.warning('Đã tạo đơn nhưng lỗi lấy QR. Vui lòng kiểm tra lại đơn hàng.');
+                    message.warning('Lỗi lấy QR. Vui lòng kiểm tra lại đơn hàng.');
                     setIsSuccess(true);
                     clearCart();
                     navigate('/orders');
                 }
             } else {
-                // Xử lý COD
                 setIsSuccess(true);
-                message.success('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+                message.success('Đặt hàng thành công!');
                 clearCart(); 
-                setTimeout(() => {
-                    navigate('/orders');
-                }, 100);
+                setTimeout(() => { navigate('/orders'); }, 100);
             }
-
         } catch (error) {
-            console.error("Lỗi đặt hàng:", error);
-            // Hiện rõ lỗi từ Backend trả về nếu có
-            const errorMessage = error.response?.data?.message || 'Đặt hàng thất bại, vui lòng thử lại!';
+            const errorMessage = error.response?.data?.message || 'Đặt hàng thất bại!';
             message.error(errorMessage);
         } finally {
             setLoading(false);
@@ -149,29 +139,20 @@ const CheckoutPage = () => {
         <div className="checkout-container py-20">
             <div className="container">
                 <Title level={2} style={{ marginBottom: 20, textAlign: 'center' }}>THANH TOÁN</Title>
-
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handlePlaceOrder}
-                    initialValues={{ paymentMethod: 'COD' }}
-                >
+                <Form form={form} layout="vertical" onFinish={handlePlaceOrder} initialValues={{ paymentMethod: 'COD' }}>
                     <Row gutter={24}>
                         <Col xs={24} md={14}>
                             <Card title="Thông tin giao hàng" className="checkout-card mb-20">
-                                <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}>
+                                <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true, message: 'Nhập họ tên' }]}>
                                     <Input prefix={<UserOutlined />} placeholder="Nguyễn Văn A" size="large" />
                                 </Form.Item>
-
-                                <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Vui lòng nhập số điện thoại' }, { pattern: /^[0-9]{10}$/, message: 'Số điện thoại không hợp lệ' }]}>
+                                <Form.Item name="phone" label="Số điện thoại" rules={[{ required: true, message: 'Nhập SĐT' }, { pattern: /^[0-9]{10}$/, message: 'SĐT không hợp lệ' }]}>
                                     <Input prefix={<PhoneOutlined />} placeholder="0987..." size="large" />
                                 </Form.Item>
-
-                                <Form.Item name="address" label="Địa chỉ nhận hàng" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}>
-                                    <TextArea rows={3} placeholder="Số nhà, đường, phường/xã..." />
+                                <Form.Item name="address" label="Địa chỉ nhận hàng" rules={[{ required: true, message: 'Nhập địa chỉ' }]}>
+                                    <TextArea rows={3} placeholder="Số nhà, đường..." />
                                 </Form.Item>
-
-                                <Form.Item name="note" label="Ghi chú đơn hàng (Tùy chọn)">
+                                <Form.Item name="note" label="Ghi chú">
                                     <TextArea rows={2} placeholder="Ví dụ: Giao giờ hành chính..." />
                                 </Form.Item>
                             </Card>
@@ -232,14 +213,13 @@ const CheckoutPage = () => {
                     </Row>
                 </Form>
 
-                {/* COMPONENT MODAL THANH TOÁN */}
-           <VietQRModal 
-    open={isModalVisible}
-    qrData={qrData}
-    onClose={handleCloseModal}
-    onConfirm={handleConfirmPayment}
-    amount={finalTotal} // <-- PHẢI CÓ DÒNG NÀY
-/>
+                <VietQRModal 
+                    open={isModalVisible}
+                    qrData={qrData}
+                    onClose={handleCloseModal}
+                    onConfirm={handleConfirmPayment}
+                    amount={finalTotal}
+                />
             </div>
         </div>
     );

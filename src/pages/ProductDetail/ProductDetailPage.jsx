@@ -17,13 +17,12 @@ const ProductDetailPage = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     
-    // --- STATE QUẢN LÝ SIZE / MÀU ---
     const [selectedSize, setSelectedSize] = useState(null);
-    const [selectedColor, setSelectedColor] = useState(null); // Thêm state Màu
+    const [selectedColor, setSelectedColor] = useState(null); 
     const [quantity, setQuantity] = useState(1);
     
     const [availableSizes, setAvailableSizes] = useState([]);
-    const [availableColors, setAvailableColors] = useState([]); // List màu theo size
+    const [availableColors, setAvailableColors] = useState([]); 
     
     const [mainImage, setMainImage] = useState('');
 
@@ -32,24 +31,17 @@ const ProductDetailPage = () => {
         window.scrollTo(0, 0); 
     }, [id]);
 
-    // Khi chọn Size -> Lọc ra các màu tương ứng của size đó
     useEffect(() => {
         if (product && selectedSize) {
-            // Tìm tất cả biến thể có size này
             const variantsWithSize = product.variants.filter(v => v.size === selectedSize);
-            
-            // Lấy danh sách màu (unique)
             const colors = [...new Set(variantsWithSize.map(v => v.color))];
             setAvailableColors(colors);
-            
-            // Reset màu đang chọn (để khách chọn lại)
             setSelectedColor(null);
         } else {
             setAvailableColors([]);
         }
     }, [selectedSize, product]);
 
-    // Khi chọn Màu -> Tự động đổi ảnh chính nếu biến thể đó có ảnh riêng
     useEffect(() => {
         if (selectedSize && selectedColor) {
             const variant = getSelectedVariant();
@@ -81,35 +73,49 @@ const ProductDetailPage = () => {
         }
     };
 
-    // Hàm tìm biến thể chính xác dựa trên Size VÀ Màu
     const getSelectedVariant = () => {
         if (!product || !selectedSize || !selectedColor) return null;
         return product.variants.find(v => v.size === selectedSize && v.color === selectedColor);
     };
 
-    const handleAddToCart = () => {
+    // Hàm kiểm tra chung trước khi thêm vào giỏ hoặc mua ngay
+    const validateSelection = () => {
         if (!selectedSize) {
             message.warning('Vui lòng chọn Size giày!');
-            return;
+            return false;
         }
         if (!selectedColor) {
             message.warning('Vui lòng chọn Màu sắc!');
-            return;
+            return false;
         }
-
         const currentVariant = getSelectedVariant();
-        
         if (currentVariant && currentVariant.stock < quantity) {
             message.error(`Mẫu này chỉ còn lại ${currentVariant.stock} sản phẩm!`);
-            return;
+            return false;
         }
+        return currentVariant;
+    };
 
-        addToCart(product, quantity, currentVariant);
-        
-        message.success({
-            content: `Đã thêm ${product.name} (Size ${selectedSize} - ${selectedColor}) vào giỏ hàng!`,
-            style: { marginTop: '20vh' },
-        });
+    const handleAddToCart = () => {
+        const variant = validateSelection();
+        if (variant) {
+            addToCart(product, quantity, variant);
+            message.success({
+                content: `Đã thêm vào giỏ hàng!`,
+                style: { marginTop: '20vh' },
+            });
+        }
+    };
+
+    // --- 👇 HÀM MUA NGAY ĐÃ SỬA ---
+    const handleBuyNow = () => {
+        const variant = validateSelection();
+        if (variant) {
+            // 1. Thêm vào giỏ hàng trước
+            addToCart(product, quantity, variant);
+            // 2. Chuyển hướng sang trang checkout ngay lập tức
+            navigate('/checkout');
+        }
     };
 
     if (loading) return <div className="spinner-center"><Spin size="large" /></div>;
@@ -165,7 +171,6 @@ const ProductDetailPage = () => {
 
                         <Divider />
 
-                        {/* --- CHỌN SIZE --- */}
                         <div className="mb-20">
                             <Text strong className="d-block mb-10">
                                 Chọn Size: {selectedSize && <Tag color="green">Size {selectedSize}</Tag>}
@@ -178,7 +183,6 @@ const ProductDetailPage = () => {
                                     buttonStyle="solid"
                                 >
                                     {availableSizes.map(size => {
-                                        // Kiểm tra tổng tồn kho của size này (bất kể màu nào)
                                         const variantsWithSize = product.variants.filter(v => v.size === size);
                                         const totalStockForSize = variantsWithSize.reduce((acc, curr) => acc + curr.stock, 0);
                                         const isOutOfStock = totalStockForSize <= 0;
@@ -200,7 +204,6 @@ const ProductDetailPage = () => {
                             )}
                         </div>
 
-                        {/* --- CHỌN MÀU (Chỉ hiện khi đã chọn Size) --- */}
                         {selectedSize && (
                             <div className="mb-20">
                                 <Text strong className="d-block mb-10">
@@ -211,7 +214,6 @@ const ProductDetailPage = () => {
                                     onChange={(e) => setSelectedColor(e.target.value)}
                                 >
                                     {availableColors.map(color => {
-                                        // Kiểm tra tồn kho cụ thể của Size + Màu này
                                         const variant = product.variants.find(v => v.size === selectedSize && v.color === color);
                                         const isStock = variant ? variant.stock > 0 : false;
 
@@ -230,7 +232,6 @@ const ProductDetailPage = () => {
                             </div>
                         )}
 
-                        {/* --- SỐ LƯỢNG & STOCK --- */}
                         <div className="mb-20">
                             <Text strong className="d-block mb-10">Số lượng:</Text>
                             <InputNumber 
@@ -239,7 +240,7 @@ const ProductDetailPage = () => {
                                 value={quantity} 
                                 onChange={setQuantity} 
                                 size="large"
-                                disabled={!selectedSize || !selectedColor} // Khóa lại nếu chưa chọn đủ
+                                disabled={!selectedSize || !selectedColor}
                             />
                             {selectedSize && selectedColor && getSelectedVariant() && (
                                 <Text type="secondary" className="ml-10">
@@ -264,6 +265,7 @@ const ProductDetailPage = () => {
                                 size="large" 
                                 icon={<ThunderboltOutlined />} 
                                 className="flex-1 btn-buy-now"
+                                onClick={handleBuyNow} // 👇 ĐÃ GÁN HÀM VÀO ĐÂY
                                 disabled={!selectedSize || !selectedColor}
                             >
                                 MUA NGAY
