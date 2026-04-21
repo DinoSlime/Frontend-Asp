@@ -31,23 +31,24 @@ const HomePage = () => {
             setLoading(true);
             const res = await productService.getAll();
             
-            // ✅ ĐÃ SỬA: Logic bóc tách mảng dữ liệu linh hoạt cho Backend C#
             let rawData = [];
             
+            // Logic bóc tách dữ liệu linh hoạt
             if (res?.data?.data && Array.isArray(res.data.data)) {
-                // Trường hợp API trả về { data: { data: [...] } }
                 rawData = res.data.data;
             } else if (res?.data && Array.isArray(res.data)) {
-                // Trường hợp API trả về { data: [...] } (Cấu trúc C# của bạn hiện tại)
                 rawData = res.data;
             } else if (Array.isArray(res)) {
-                // Trường hợp trả về thẳng mảng
                 rawData = res;
             }
             
             if (rawData.length > 0) {
-                // Lấy tối đa 8 sản phẩm mới nhất hiện trang chủ
-                setProducts(rawData.slice(0, 8));
+                // 👇 ĐÃ CẬP NHẬT: Sắp xếp lại mảng theo ID giảm dần 
+                // để chắc chắn sản phẩm mới nhất nằm ở vị trí đầu tiên
+                const sortedData = [...rawData].sort((a, b) => b.id - a.id);
+                
+                // Lấy 8 sản phẩm đầu tiên (sau khi đã sắp xếp mới nhất lên đầu)
+                setProducts(sortedData.slice(0, 8));
             } else {
                 setProducts([]);
             }

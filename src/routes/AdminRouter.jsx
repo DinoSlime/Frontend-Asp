@@ -5,6 +5,7 @@ import Dashboard from '../pages/Admin/Dashboard';
 import ProductManager from '../pages/Admin/ProductManager';
 import CategoryManager from '../pages/Admin/CategoryManager';
 import OrderManagement from '../pages/Admin/OrderManagement';
+import UserManagement from '../pages/Admin/UserManagement';
 
 const AdminRouter = () => {
     return (
@@ -26,7 +27,7 @@ const AdminRouter = () => {
                 <Route path="orders" element={<OrderManagement />} />
                 
                 {/* Đường dẫn: /admin/users */}
-                <Route path="users" element={<div>Quản lý người dùng</div>} />
+                <Route path="users" element={<UserManagement />} />
             </Route>
         </Routes>
     );
