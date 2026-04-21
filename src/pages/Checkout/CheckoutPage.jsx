@@ -233,12 +233,13 @@ const CheckoutPage = () => {
                 </Form>
 
                 {/* COMPONENT MODAL THANH TOÁN */}
-                <VietQRModal 
-                    open={isModalVisible}
-                    qrData={qrData}
-                    onClose={handleCloseModal}
-                    onConfirm={handleConfirmPayment}
-                />
+           <VietQRModal 
+    open={isModalVisible}
+    qrData={qrData}
+    onClose={handleCloseModal}
+    onConfirm={handleConfirmPayment}
+    amount={finalTotal} // <-- PHẢI CÓ DÒNG NÀY
+/>
             </div>
         </div>
     );

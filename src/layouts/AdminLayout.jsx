@@ -8,7 +8,7 @@ import {
     UserOutlined, 
     OrderedListOutlined 
 } from '@ant-design/icons';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'; // 👈 Thêm useLocation
 
 const { Header, Sider, Content } = Layout;
 
@@ -18,10 +18,10 @@ const AdminLayout = () => {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
     const navigate = useNavigate();
+    const location = useLocation(); // 👈 Lấy vị trí hiện tại để Menu không bị nhảy
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            {/* 1. SIDEBAR (Menu trái) */}
             <Sider trigger={null} collapsible collapsed={collapsed}>
                 <div style={{ 
                     height: '32px', 
@@ -39,16 +39,17 @@ const AdminLayout = () => {
                 <Menu
                     theme="dark"
                     mode="inline"
-                    defaultSelectedKeys={['1']}
+                    // 👇 Tự động highlight Menu dựa trên đường dẫn thực tế trên thanh địa chỉ
+                    selectedKeys={[location.pathname]} 
                     onClick={({ key }) => navigate(key)}
                     items={[
                         {
-                            key: '/admin',
+                            key: '/admin', // Khớp với index route
                             icon: <DashboardOutlined />,
                             label: 'Tổng quan',
                         },
                         {
-                            key: '/admin/products',
+                            key: '/admin/products', // Khớp với path="products" trong AdminRouter
                             icon: <ShoppingOutlined />,
                             label: 'Quản lý Sản phẩm',
                         },
@@ -71,9 +72,8 @@ const AdminLayout = () => {
                 />
             </Sider>
 
-            {/* 2. MAIN LAYOUT (Phần phải) */}
             <Layout>
-                <Header style={{ padding: 0, background: colorBgContainer }}>
+                <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', alignItems: 'center' }}>
                     <Button
                         type="text"
                         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -94,10 +94,11 @@ const AdminLayout = () => {
                         minHeight: 280,
                         background: colorBgContainer,
                         borderRadius: borderRadiusLG,
+                        overflow: 'initial' // Tránh lỗi scroll nếu content quá dài
                     }}
                 >
-                    {/* Nơi hiển thị nội dung các trang con */}
-                    <Outlet />
+                    {/* 👇 CỰC KỲ QUAN TRỌNG: Phải có thẻ này để hiện ruột bên trong */}
+                    <Outlet /> 
                 </Content>
             </Layout>
         </Layout>

@@ -86,7 +86,7 @@ const OrderDetailPage = () => {
     };
 
     if (loading) return <div className="spinner-center"><Spin size="large" /></div>;
-    if (!order) return <div className="text-center py-20">Không tìm thấy đơn hàng</div>;
+    if (!order || !order.orderDetails) return <div className="text-center py-20">Đang tải hoặc lỗi dữ liệu đơn hàng...</div>;
 
     const currentStatus = order.status ? order.status.toUpperCase() : '';
 
@@ -218,11 +218,12 @@ const OrderDetailPage = () => {
             </div>
 
             <VietQRModal 
-                open={isModalVisible}
-                qrData={qrData}
-                onClose={() => setIsModalVisible(false)}
-                onConfirm={handleConfirmPayment}
-            />
+    open={isModalVisible}
+    qrData={qrData}
+    onClose={() => setIsModalVisible(false)}
+    onConfirm={handleConfirmPayment}
+    amount={order?.totalMoney} // <-- PHẢI CÓ DÒNG NÀY
+/>
         </div>
     );
 };

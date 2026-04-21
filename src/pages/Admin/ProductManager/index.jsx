@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Popconfirm, message, Space, Modal, Form, Input, InputNumber, Select, Tag, Card, Row, Col, Image, Tooltip, Upload } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined, MinusCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Table, Button, Popconfirm, message, Space, Modal, Form, Input, InputNumber, Select, Tag, Card, Row, Col, Image, Tooltip, Upload, Typography } from 'antd'; // 👈 Đã thêm Typography
+import { DeleteOutlined, EditOutlined, PlusOutlined, MinusCircleOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons'; // 👈 Đã thêm UploadOutlined
 import productService from '../../../services/productService';
 import categoryService from '../../../services/categoryService';
 import { formatPrice, formatDateTime } from '../../../utils/format';
+
+const { Text } = Typography; // 👈 Khai báo thẻ Text để không bị trắng trang
 
 const UPLOAD_API_URL = 'https://localhost:7011/api/Uploads/image'; 
 
@@ -19,7 +21,7 @@ const ProductManager = () => {
     const [previewImage, setPreviewImage] = useState('');
     const [uploading, setUploading] = useState(false);
 
-    // --- FETCH DATA (ĐÃ SỬA LỖI TRẮNG TRANG) ---
+    // --- FETCH DATA ---
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -28,38 +30,20 @@ const ProductManager = () => {
                 categoryService.getAll()
             ]);
             
-            // 1. Kiểm tra cấu trúc Product (Nhấn F12 xem dòng này)
-            console.log("Dữ liệu Product gốc:", productRes);
-
-            // TÌM MẢNG TRONG PRODUCT:
+            // Lọc mảng Product
             let pArray = [];
-            // Trường hợp 1: Dữ liệu nằm trong productRes.data.data (Do axios bọc thêm 1 lớp data)
-            if (productRes?.data?.data && Array.isArray(productRes.data.data)) {
-                pArray = productRes.data.data;
-            }
-            // Trường hợp 2: Dữ liệu nằm trong productRes.data (Như cái JSON bạn gửi)
-            else if (productRes?.data && Array.isArray(productRes.data)) {
-                pArray = productRes.data;
-            }
-            // Trường hợp 3: productRes chính là mảng
-            else if (Array.isArray(productRes)) {
-                pArray = productRes;
-            }
+            if (productRes?.data?.data && Array.isArray(productRes.data.data)) pArray = productRes.data.data;
+            else if (productRes?.data && Array.isArray(productRes.data)) pArray = productRes.data;
+            else if (Array.isArray(productRes)) pArray = productRes;
             
             setProducts(pArray);
 
-            // 2. TÌM MẢNG TRONG CATEGORY:
+            // Lọc mảng Category
             let cArray = [];
-            if (Array.isArray(categoryRes)) {
-                cArray = categoryRes;
-            } else if (Array.isArray(categoryRes?.data)) {
-                cArray = categoryRes.data;
-            }
+            if (Array.isArray(categoryRes)) cArray = categoryRes;
+            else if (Array.isArray(categoryRes?.data)) cArray = categoryRes.data;
+            
             setCategories(cArray);
-
-            if (pArray.length === 0) {
-                console.warn("Cảnh báo: Đã gọi API thành công nhưng mảng Product vẫn rỗng!");
-            }
 
         } catch (error) {
             console.error("Lỗi fetch API:", error);
@@ -73,7 +57,7 @@ const ProductManager = () => {
         fetchData();
     }, []);
 
-    // --- LOGIC UPLOAD IMAGE ---
+    // --- LOGIC UPLOAD ẢNH CHÍNH ---
     const handleUploadChange = (info) => {
         if (info.file.status === 'uploading') {
             setUploading(true);
@@ -261,7 +245,7 @@ const ProductManager = () => {
                 open={isModalOpen}
                 onOk={() => form.submit()}
                 onCancel={handleCloseModal}
-                width={900}
+                width={1000} // Nới rộng form một chút cho đẹp
                 okText="Lưu lại"
                 cancelText="Hủy"
             >
@@ -320,7 +304,7 @@ const ProductManager = () => {
                             </Col>
                             <Col span={8} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <div style={{ border: '1px dashed #d9d9d9', padding: 8, borderRadius: 8, textAlign: 'center' }}>
-                                    <span style={{ display: 'block', marginBottom: 8, color: '#888' }}>Xem trước ảnh lớn</span>
+                                    <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>Xem trước ảnh lớn</Text>
                                     <Image width={150} height={150} src={previewImage || "https://placehold.co/150x150?text=No+Image"} style={{ objectFit: 'contain' }} />
                                 </div>
                             </Col>
@@ -337,13 +321,13 @@ const ProductManager = () => {
                             {(fields, { add, remove }) => (
                                 <>
                                     {fields.map(({ key, name, ...restField }) => (
-                                        <Row key={key} gutter={8} align="middle" style={{ marginBottom: 8, background: '#fafafa', padding: '8px', borderRadius: '6px', border: '1px solid #f0f0f0' }}>
+                                        <Row key={key} gutter={8} align="middle" style={{ marginBottom: 12, background: '#fafafa', padding: '12px', borderRadius: '6px', border: '1px solid #f0f0f0' }}>
                                             <Col span={4}>
                                                 <Form.Item {...restField} name={[name, 'size']} rules={[{ required: true, message: 'Nhập Size!' }]} label="Size">
                                                     <InputNumber style={{ width: '100%' }} />
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={6}>
+                                            <Col span={5}>
                                                 <Form.Item {...restField} name={[name, 'color']} rules={[{ required: true, message: 'Nhập Màu!' }]} label="Màu sắc">
                                                     <Input />
                                                 </Form.Item>
@@ -353,9 +337,40 @@ const ProductManager = () => {
                                                     <InputNumber style={{ width: '100%' }} />
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={8}>
-                                                <Form.Item {...restField} name={[name, 'imageUrl']} label="Link ảnh riêng">
-                                                    <Input placeholder="Để trống lấy ảnh chính" />
+                                            
+                                            {/* Phần Upload Ảnh Riêng Cho Biến Thể */}
+                                            <Col span={9}>
+                                                <Form.Item label="Ảnh biến thể">
+                                                    <Space align="start">
+                                                        <Form.Item {...restField} name={[name, 'imageUrl']} noStyle>
+                                                            <Input placeholder="Tải ảnh lên..." readOnly style={{ width: '140px' }} />
+                                                        </Form.Item>
+                                                        <Upload
+                                                            name="file"
+                                                            showUploadList={false}
+                                                            action={UPLOAD_API_URL}
+                                                            headers={{ Authorization: `Bearer ${localStorage.getItem('token')}` }}
+                                                            beforeUpload={beforeUpload}
+                                                            onChange={(info) => {
+                                                                if (info.file.status === 'done') {
+                                                                    const url = info.file.response.url;
+                                                                    const currentVariants = form.getFieldValue('variants');
+                                                                    currentVariants[name].imageUrl = url;
+                                                                    form.setFieldsValue({ variants: currentVariants });
+                                                                    message.success('Tải ảnh biến thể thành công!');
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                                                        </Upload>
+                                                        {/* Xem trước ảnh nhỏ */}
+                                                        <Form.Item shouldUpdate noStyle>
+                                                            {() => {
+                                                                const url = form.getFieldValue(['variants', name, 'imageUrl']);
+                                                                return url ? <Image src={url} width={32} height={32} style={{ borderRadius: 4, objectFit: 'cover' }} /> : null;
+                                                            }}
+                                                        </Form.Item>
+                                                    </Space>
                                                 </Form.Item>
                                             </Col>
                                             <Col span={2} style={{ textAlign: 'center', paddingTop: '24px' }}>
