@@ -15,9 +15,21 @@ const ProductListPage = () => {
                 setLoading(true);
                 const params = { page: 0, limit: 1000, size: 1000 };
                 const res = await productService.getAll(params);
-                // Lấy dữ liệu từ content (nếu là Page) hoặc trực tiếp từ res.data
-                const data = res.data?.content || res.data || [];
-                setProducts(data);
+                
+                // In ra console để kiểm tra nếu cần
+                console.log("Dữ liệu trang Tất cả sản phẩm:", res);
+
+                // ✅ LOGIC LỌC MẢNG CHUẨN CHO BACKEND C#
+                let pArray = [];
+                if (res?.data?.data && Array.isArray(res.data.data)) {
+                    pArray = res.data.data;
+                } else if (res?.data && Array.isArray(res.data)) {
+                    pArray = res.data;
+                } else if (Array.isArray(res)) {
+                    pArray = res;
+                }
+
+                setProducts(pArray);
             } catch (error) {
                 console.error("Lỗi tải sản phẩm:", error);
             } finally {
