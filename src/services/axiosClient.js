@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-    baseURL: 'https://localhost:7011/api',
+    baseURL: 'https://api-ban-giay.onrender.com/api',
     headers: {
         'Content-Type': 'application/json',
     },
