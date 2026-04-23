@@ -7,7 +7,7 @@ import { formatPrice, formatDateTime } from '../../../utils/format';
 
 const { Text } = Typography; // 👈 Khai báo thẻ Text để không bị trắng trang
 
-const UPLOAD_API_URL = 'https://localhost:7011/api/Uploads/image'; 
+const UPLOAD_API_URL = 'https://api-ban-giay.onrender.com/api/Uploads/image'; 
 
 const ProductManager = () => {
     const [products, setProducts] = useState([]);
