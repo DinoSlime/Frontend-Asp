@@ -29,7 +29,8 @@ const CheckoutPage = () => {
     const { user } = useAuth();
 
     const subTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingFee = 30000; 
+    // 👇 SỬA TẠI ĐÂY: Đổi phí ship thành 0 để thực sự Miễn phí vận chuyển
+    const shippingFee = 0; 
     const finalTotal = subTotal + shippingFee;
 
     useEffect(() => {
@@ -48,12 +49,10 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate, isModalVisible, isSuccess]);
 
-    // 👇 SỬA TẠI ĐÂY: Hàm xác nhận ngay trên Checkout
     const handleConfirmPayment = async () => {
         try {
             setLoading(true);
             if (createdOrderId) {
-                // Gọi hàm confirmPayment dành cho User thay vì hàm admin update status
                 await orderService.confirmPayment(createdOrderId);
             }
             
@@ -62,7 +61,6 @@ const CheckoutPage = () => {
             clearCart(); 
             message.success('Đã nhận yêu cầu thanh toán! Đang chuyển đến chi tiết đơn hàng.');
             
-            // Chuyển hướng thẳng vào trang chi tiết đơn hàng vừa tạo
             setTimeout(() => {
                 navigate(`/order/${createdOrderId}`);
             }, 300);
@@ -198,7 +196,8 @@ const CheckoutPage = () => {
                                 </div>
                                 <div className="total-row">
                                     <Text type="secondary">Phí vận chuyển:</Text>
-                                    <Text>{formatPrice(shippingFee)}</Text>
+                                    {/* 👇 SỬA TẠI ĐÂY: Hiển thị chữ Miễn phí thay vì 0đ */}
+                                    <Text type="success" strong>Miễn phí</Text>
                                 </div>
                                 <Divider style={{ margin: '15px 0' }} />
                                 <div className="total-row" style={{ alignItems: 'center' }}>
