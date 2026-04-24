@@ -115,6 +115,9 @@ const OrderManagement = () => {
                         <Option value="CANCELLED">
                             <Badge status="error" text="Đã hủy" />
                         </Option>
+                        <Option value="PAID">
+                            <Badge status="success" text="Đã thanh toán" />
+                        </Option>
                     </Select>
                 );
             },

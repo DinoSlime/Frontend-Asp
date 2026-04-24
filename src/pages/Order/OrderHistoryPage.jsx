@@ -69,7 +69,9 @@ const OrderHistoryPage = () => {
             
             case 'CANCELLED': 
                 return <Tag color="red">Đã hủy</Tag>;
-            
+            case 'PAID': 
+                return <Tag color="green">Đã thanh toán</Tag>;
+
             default: 
                 return <Tag>{status}</Tag>;
         }
