@@ -19,7 +19,7 @@ const MainLayout = () => {
                 <AppFooter />
             </Layout>
         </div>
-    );
+    );  
 };
 
 export default MainLayout;

@@ -75,6 +75,7 @@ const OrderDetailPage = () => {
             case 'SHIPPING': return <Tag color="blue">Đang giao hàng</Tag>;
             case 'DELIVERED': return <Tag color="green">Đã giao hàng</Tag>;
             case 'CANCELLED': return <Tag color="red">Đã hủy</Tag>;
+            case 'PAID': return <Tag color="green">Đã thanh toán</Tag>;
             default: return <Tag>{status}</Tag>;
         }
     };
