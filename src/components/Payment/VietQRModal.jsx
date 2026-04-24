@@ -59,6 +59,10 @@ const VietQRModal = ({ open, onClose, qrData, onConfirm, amount }) => {
                             <Text strong type="danger" style={{ fontSize: 28 }}>
                                 {formatPrice(displayAmount)}
                             </Text>
+                            {/* Dòng hiển thị miễn phí vận chuyển */}
+                            <Text type="success" style={{ fontSize: 15, fontWeight: 'bold' }}>
+                                ✨ Đã áp dụng Miễn phí vận chuyển!
+                            </Text>
                         </Space>
                         
                         <Divider style={{ margin: '12px 0' }} />
@@ -78,6 +82,7 @@ const VietQRModal = ({ open, onClose, qrData, onConfirm, amount }) => {
 
                     <div style={{ marginTop: 20, textAlign: 'left', padding: '0 10px' }}>
                         <Text type="secondary" style={{ fontSize: 13 }}>
+                            • Đơn hàng của bạn được <b>miễn phí giao hàng</b> toàn quốc.<br />
                             • Sử dụng ứng dụng Ngân hàng để quét mã QR.<br />
                             • Kiểm tra kỹ <b>Số tiền</b> và <b>Nội dung</b> trước khi chuyển.<br />
                             • Sau khi chuyển xong, hãy nhấn nút bên dưới để hoàn tất.
