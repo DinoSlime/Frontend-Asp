@@ -51,14 +51,12 @@ const OrderDetailPage = () => {
         }
     };
 
-    // 👇 SỬA TẠI ĐÂY: Đồng bộ trạng thái sau khi xác nhận thanh toán
     const handleConfirmPayment = async () => {
         try {
             await orderService.confirmPayment(order.id);
             setIsModalVisible(false);
             message.success('Đã gửi xác nhận! Vui lòng chờ Admin kiểm tra.');
             
-            // Tải lại dữ liệu ngay lập tức để ẩn nút QR và hiện thông báo chờ xác nhận
             fetchOrderDetail(); 
         } catch (error) {
             console.error(error);
@@ -129,7 +127,7 @@ const OrderDetailPage = () => {
 
                 <Row gutter={[24, 24]} className="mb-30">
                     <Col xs={24} md={12}>
-                        <Card title={<><ShoppingOutlined /> Thông tin nhận hàng</>} className="info-card" variant="borderless">
+                        <Card title={<><ShoppingOutlined /> Thông vị nhận hàng</>} className="info-card" variant="borderless">
                             <div className="info-row"><span className="info-label">Người nhận:</span> <span className="info-value">{order.customerName || order.fullName}</span></div>
                             <div className="info-row"><span className="info-label">SĐT:</span> <span className="info-value">{order.phoneNumber}</span></div>
                             <div className="info-row"><span className="info-label">Địa chỉ:</span> <span className="info-value">{order.address}</span></div>
@@ -147,13 +145,13 @@ const OrderDetailPage = () => {
 
                 <div className="total-section">
                     <div className="total-wrapper">
-                        <div className="total-row"><Text type="secondary">Tiền hàng:</Text> <Text>{formatPrice(order.totalMoney - 30000)}</Text></div>
-                        <div className="total-row"><Text type="secondary">Phí vận chuyển:</Text> <Text>{formatPrice(30000)}</Text></div>
+                        {/* 👇 Đã sửa: Xóa -30000 khỏi Tiền hàng, và đổi Phí vận chuyển thành chữ Miễn phí */}
+                        <div className="total-row"><Text type="secondary">Tiền hàng:</Text> <Text>{formatPrice(order.totalMoney)}</Text></div>
+                        <div className="total-row"><Text type="secondary">Phí vận chuyển:</Text> <Text type="success" strong>Miễn phí</Text></div>
                         <div className="total-row" style={{ marginTop: 10, borderTop: '1px solid #eee', paddingTop: 10 }}>
                             <Text strong style={{ fontSize: 16 }}>TỔNG CỘNG:</Text> <span style={{ fontSize: '20px', color: 'red', fontWeight: 'bold' }}>{formatPrice(order.totalMoney)}</span>
                         </div>
 
-                        {/* HIỂN THỊ DỰA TRÊN STATUS ĐỂ TRÁNH THANH TOÁN 2 LẦN */}
                         {currentStatus === 'PENDING' && order.paymentMethod === 'BANK' && (
                             <div style={{ marginTop: 20, textAlign: 'right' }}>
                                 <Button type="primary" size="large" icon={<QrcodeOutlined />} onClick={handleRepayment} loading={repayLoading} style={{ background: '#389e0d' }}> Lấy mã QR Thanh toán </Button>
